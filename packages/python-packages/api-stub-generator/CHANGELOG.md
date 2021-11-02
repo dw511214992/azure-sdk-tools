@@ -1,5 +1,8 @@
 # Release History
 
+## Version 0.2.5 (Unreleased)
+Fix issue where non-async methods were erroneously marked async.
+
 ## Version 0.2.2 (Unreleased)
 Bug fixes in type hint parser
 

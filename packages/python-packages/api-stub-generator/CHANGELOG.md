@@ -1,5 +1,8 @@
 # Release History
 
+## Version 0.2.5 (Unreleased)
+Fixed but where, in some instances, return types were truncated.
+
 ## Version 0.2.2 (Unreleased)
 Bug fixes in type hint parser
 

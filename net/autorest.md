@@ -2,5 +2,5 @@
 ``` yaml
 output-folder: sdk/demoservice/Azure.IoT.NewServiceDemo
 require:
-  - specification/demoservice/data-plane/readme.md
+  - demoservice/data-plane/readme.md
 ```

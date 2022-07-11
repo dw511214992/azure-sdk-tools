@@ -22,5 +22,12 @@ steps:
     displayName: Check parameters
 
   - bash: |
-      echo "##vso[task.setvariable variable=sdkRepoUrl;]https://github.com/Azure/azure-sdk-for-${{parameters.sdk}}.git"
+      #TODO remove hard code
+      if [ ${{parameters.sdk}} = "js" ]; then
+        echo "##vso[task.setvariable variable=sdkRepoUrl;]https://github.com/openapi-env-test/azure-sdk-for-js.git"
+      elif [ ${{parameters.sdk}} = "net" ]; then
+        echo "##vso[task.setvariable variable=sdkRepoUrl;]https://github.com/openapi-env-test/azure-sdk-for-net.git"
+      else
+        echo "##vso[task.setvariable variable=sdkRepoUrl;]https://github.com/Azure/azure-sdk-for-${{parameters.sdk}}.git"
+      fi
     displayName: Set sdk repo

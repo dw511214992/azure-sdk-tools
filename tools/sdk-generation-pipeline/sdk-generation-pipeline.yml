@@ -86,6 +86,8 @@ stages:
               readmeFile: ${{ parameters.relativeReadmeFilePath }}
               trigger: ${{ parameters.clientAgent }}
               triggerType: ${{ parameters.triggerType }}
+              serviceType: ${{ parameters.serviceType }}
+              sdk: ${{ parameters.sdkToGernerate }}
 
           - template: ./pipelines/steps/parse-and-publish-result.yml
             parameters:

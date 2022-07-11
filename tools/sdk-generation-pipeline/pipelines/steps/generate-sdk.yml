@@ -8,6 +8,12 @@ parameters:
   - name: triggerType
     type: string
 
+  - name: serviceType
+    type: string
+
+  - name: sdk
+    type: string
+
 steps:
   - bash: |
       publishResult \
@@ -23,9 +29,57 @@ steps:
       EVENTHUB_SAS_URL: $(EVENTHUB_SAS_URL)
     condition: ne('${{ parameters.triggerType }}', 'release')
     
-
   - bash: |
-      docker run \
+      #TODO: use real config
+      ls -al `pwd`/net/autorest.md
+      ls -al `pwd`/js/autorest.md
+      if [ ${{parameters.sdk}} = "js" ]; then
+        #echo "# azure-sdk-for-js\n\`\`\` yaml\noutput-folder: sdk/demoservice/newservice-demo-rest\nrequire:\n  - specification/demoservice/data-plane/readme.md\n\`\`\`" > /tmp/output/autorest.md
+        
+        docker run --privileged \
+          -v $(SPEC_REPO):/spec-repo \
+          -v $(SDK_REPO):/sdk-repo \
+          -v `pwd`/js/autorest.md:/autorest.md \
+          -v /tmp/output:/tmp/output \
+          $(DOCKER_IMAGE) \
+          --readme=${{ parameters.readmeFile }}
+        #cat /tmp/output/autorest.md
+        cat `pwd`/js/autorest.md
+      elif [ ${{parameters.sdk}} = "net" ]; then
+        #echo "# azure-sdk-for-net-track2
+        #\`\`\` yaml
+        #output-folder: sdk/demoservice/Azure.IoT.NewServiceDemo
+        #require:
+        #- specification/demoservice/data-plane/readme.md
+        #\`\`\`" > /tmp/output/autorest.md
+        
+        docker run --privileged \
+          -v $(SPEC_REPO):/spec-repo \
+          -v $(SDK_REPO):/sdk-repo \
+          -v `pwd`/net/autorest.md:/autorest.md \
+          -v /tmp/output:/tmp/output \
+          $(DOCKER_IMAGE) \
+          --readme=${{ parameters.readmeFile }}
+        #cat /tmp/output/autorest.md
+        cat `pwd`/net/autorest.md
+      fi
+
+
+      #docker run --privileged \
+      #  -v $(SPEC_REPO):/spec-repo \
+      #  -v $(SDK_REPO):/sdk-repo \
+      #  -v /tmp/output/autorest.md:/autorest.md \
+      #  -v /tmp/output:/tmp/output \
+      #  $(DOCKER_IMAGE) \
+      #  --readme=${{ parameters.readmeFile }}
+      if [ $? -ne 0 ]; then
+          exit 1
+      fi
+    displayName: Generate sdk
+    condition: eq('${{ parameters.serviceType }}', 'data-plane')
+  
+  - bash: |
+      docker run --privileged \
         -v $(SPEC_REPO):/spec-repo \
         -v $(SDK_REPO):/sdk-repo \
         -v /tmp/output:/tmp/output \
@@ -35,6 +89,7 @@ steps:
           exit 1
       fi
     displayName: Generate sdk
+    condition: eq('${{ parameters.serviceType }}', 'resource-manager')
 
   - bash: |
       #TODO: delete this bash

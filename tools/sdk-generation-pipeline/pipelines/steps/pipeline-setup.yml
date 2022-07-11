@@ -21,7 +21,7 @@ steps:
       versionSpec: 14.x
 
   - bash: |
-      //install tools
+      #install tools
       cd tools/sdk-generation-pipeline
       npm install -g @microsoft/rush
       rush update
@@ -32,7 +32,7 @@ steps:
       npm install -g ${PACKAGE_TGZ}
       npm install -g autorest
 
-      //mkdir for artifacts
+      #mkdir for artifacts
       cd $(System.ArtifactsDirectory)
       echo "mkdir for docker output"
       mkdir -p /tmp/output
@@ -41,7 +41,7 @@ steps:
       cd $(Agent.BuildDirectory)
       getRepoName SPEC_REPO ${{ parameters.swagger.path }}
       getRepoName SDK_REPO $(sdkRepoUrl)
-      //mkdir for result artifact
+      #mkdir for result artifact
       mkdir -p $(System.ArtifactsDirectory)/in_progress/
       mkdir -p $(System.ArtifactsDirectory)/completed/
     displayName: Setup Pipeline Runtime Environment
@@ -79,7 +79,14 @@ steps:
   - bash: |
       git clone ${{ parameters.swagger.path }}
       downloadSdkRepoUrl=$(echo $(sdkRepoUrl) | sed "s#https://#https://$(REPO_OWNER):$(REPO_OWNER_ACCESSKEY)@#")
-      git clone --branch $(sdkRepoBaseBranch) ${downloadSdkRepoUrl}
+      #TODO remove hard code
+      if [ ${{parameters.sdk}} = "js" ]; then
+        git clone --branch js-dpg ${downloadSdkRepoUrl}
+      elif [ ${{parameters.sdk}} = "net" ]; then
+        git clone --branch yc/dpgauto ${downloadSdkRepoUrl}
+      else
+        git clone --branch $(sdkRepoBaseBranch) ${downloadSdkRepoUrl}
+      fi
       cd $(SPEC_REPO)
       export GITHUB_TOKEN=$(REPO_OWNER_ACCESSKEY)
       if [ -n "${{ parameters.swagger.branch }}" ];then
